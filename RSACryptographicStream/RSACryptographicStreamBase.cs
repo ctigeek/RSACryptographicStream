@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 
 // DISCLAIMER: This code is free to use but comes with NO WARRANTY or liability. Use at your own risk.
+// Full license is here: https://github.com/ctigeek/RSACryptographicStream/blob/master/LICENSE
 
 namespace RSACryptographicStream
 {
@@ -130,6 +131,11 @@ namespace RSACryptographicStream
             byte[] theInt = new byte[4];
             stream.Read(theInt, 0, 4);
             return BitConverter.ToInt32(theInt, 0);
+        }
+        public static void WriteInt32(Stream stream, int theInt)
+        {
+            var bytes = BitConverter.GetBytes(theInt);
+            stream.Write(bytes, 0, bytes.Length);
         }
         public static byte[] GetBytes(Stream stream, int length)
         {

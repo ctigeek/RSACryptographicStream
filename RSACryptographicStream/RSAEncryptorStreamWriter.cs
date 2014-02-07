@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 
 // DISCLAIMER: This code is free to use but comes with NO WARRANTY or liability. Use at your own risk.
+// Full license is here: https://github.com/ctigeek/RSACryptographicStream/blob/master/LICENSE
 
 namespace RSACryptographicStream
 {
@@ -22,7 +23,7 @@ namespace RSACryptographicStream
             get { return true; }
         }
 
-        private void StartTheEngine()
+        private void WriteHeaders()
         {
             if (!started)
             {
@@ -32,18 +33,10 @@ namespace RSACryptographicStream
                 RSAPKCS1KeyExchangeFormatter keyFormatter = new RSAPKCS1KeyExchangeFormatter(RSAkey);
                 byte[] keyEncrypted = keyFormatter.CreateKeyExchange(aesManaged.Key, aesManaged.GetType());
 
-                byte[] LenK = new byte[4];
-                byte[] LenIV = new byte[4];
-
-                int lKey = keyEncrypted.Length;
-                LenK = BitConverter.GetBytes(lKey);
-                int lIV = aesManaged.IV.Length;
-                LenIV = BitConverter.GetBytes(lIV);
-
-                UnderlyingStream.Write(LenK, 0, 4);
-                UnderlyingStream.Write(LenIV, 0, 4);
-                UnderlyingStream.Write(keyEncrypted, 0, lKey);
-                UnderlyingStream.Write(aesManaged.IV, 0, lIV);
+                WriteInt32(UnderlyingStream, keyEncrypted.Length);
+                WriteInt32(UnderlyingStream, aesManaged.IV.Length);
+                UnderlyingStream.Write(keyEncrypted, 0, keyEncrypted.Length);
+                UnderlyingStream.Write(aesManaged.IV, 0, aesManaged.IV.Length);
 
                 cryptoStream = new CryptoStream(UnderlyingStream, aesTransformer, CryptoStreamMode.Write);
 
@@ -57,7 +50,7 @@ namespace RSACryptographicStream
             {
                 throw new InvalidOperationException("The stream is already closed.");
             }
-            StartTheEngine();
+            WriteHeaders();
             cryptoStream.Write(buffer, offset, count);
             position += count;
         }

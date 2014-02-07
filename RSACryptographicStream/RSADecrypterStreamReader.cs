@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 
 // DISCLAIMER: This code is free to use but comes with NO WARRANTY or liability. Use at your own risk.
+// Full license is here: https://github.com/ctigeek/RSACryptographicStream/blob/master/LICENSE
 
 namespace RSACryptographicStream
 {
@@ -21,7 +22,7 @@ namespace RSACryptographicStream
             get { return true; }
         }
 
-        private void StartTheEngine()
+        private void ReadHeaders()
         {
             if (!started)
             {
@@ -46,7 +47,7 @@ namespace RSACryptographicStream
             {
                 throw new InvalidOperationException("The stream is already closed.");
             }
-            StartTheEngine();
+            ReadHeaders();
             var actuallyRead = cryptoStream.Read(buffer, offset, count);
             position += actuallyRead;
             return actuallyRead;
