@@ -14,7 +14,7 @@ namespace RSACryptographicStream
         {
             if (!destination.CanWrite)
             {
-                throw new ArgumentException("The destination stream is writable.");
+                throw new ArgumentException("The destination stream is not writable.");
             }
         }
 
